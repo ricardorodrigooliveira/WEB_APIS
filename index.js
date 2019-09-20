@@ -5,7 +5,8 @@ const defaultThreadPoolSize = 4;
 
 process.env.UV_THREADPOOL_SIZE = dbConfig.hrPool.poolMax + defaultThreadPoolSize;
 
-async function startup(){
+//async function startup(){
+function startup(){
     console.log('Starting application');
     try {
         console.log('Initialize database module');
