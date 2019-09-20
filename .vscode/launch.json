@@ -8,7 +8,14 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}\\index.js"
+            "program": "${workspaceFolder}/controllers/employees.js"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Debug in chrome",
+            "url":"http://localhost:3000/api/employees/",
+            "webRoot": "${workspaceFolder}/controllers/employees.js"
         }
     ]
 }

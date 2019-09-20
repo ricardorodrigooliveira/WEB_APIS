@@ -23,7 +23,6 @@ async function find(context) {
     binds.employee_id = context.id;
  
     query += `\nwhere employee_id = :employee_id`;
-    //query += `\nwhere cd_funcionario = :employee_id`;
   }
  
   const result = await database.simpleExecute(query, binds);
@@ -35,6 +34,7 @@ module.exports.find = find;
 
 const createSql =
  `insert into employees (
+    employee_id,
     first_name,
     last_name,
     email,
@@ -46,6 +46,7 @@ const createSql =
     manager_id,
     department_id
   ) values (
+    :employee_id,
     :first_name,
     :last_name,
     :email,
@@ -61,14 +62,14 @@ const createSql =
  
 async function create(emp) {
   const employee = Object.assign({}, emp);
- 
+  
   employee.employee_id = {
     dir: oracledb.BIND_OUT,
     type: oracledb.NUMBER
   }
- 
+  
   const result = await database.simpleExecute(createSql, employee);
- 
+  
   employee.employee_id = result.outBinds.employee_id[0];
  
   return employee;
@@ -76,9 +77,9 @@ async function create(emp) {
  
 module.exports.create = create;
 
-const updateSql = 
-  `update employees
-   set first_name = :first_name,
+const updateSql =
+ `update employees
+  set first_name = :first_name,
     last_name = :last_name,
     email = :email,
     phone_number = :phone_number,
@@ -88,43 +89,45 @@ const updateSql =
     commission_pct = :commission_pct,
     manager_id = :manager_id,
     department_id = :department_id
-   where employee_id = :employee_id`;
-
-  async function update(emp) {
-    const employee = Object.assign({}, emp);
-    const result = await database.simpleExecute(updateSql, employee);
-
+  where employee_id = :employee_id`;
+ 
+async function update(emp) {
+  const employee = Object.assign({}, emp);
+  const result = await database.simpleExecute(updateSql, employee);
+ 
   if (result.rowsAffected && result.rowsAffected === 1) {
     return employee;
   } else {
     return null;
   }
 }
-
+ 
 module.exports.update = update;
 
-const deleteSql = 
-  `begin
+const deleteSql =
+ `begin
+ 
     delete from job_history
     where employee_id = :employee_id;
-
+ 
     delete from employees
-    where employee_id = :employee.id;
-
+    where employee_id = :employee_id;
+ 
     :rowcount := sql%rowcount;
+ 
   end;`
-
-  async function del(id) {
-    const binds = {
-      employee_id: id,
-      rowcount: {
-        dir: oracledb.BIND_OUT,
-        type: oracledb.NUMBER
-      }
+ 
+async function del(id) {
+  const binds = {
+    employee_id: id,
+    rowcount: {
+      dir: oracledb.BIND_OUT,
+      type: oracledb.NUMBER
     }
-    const result = await database.simpleExecute(deleteSql, binds);
-
-    return result.outBinds.rowcount === 1;
   }
-
+  const result = await database.simpleExecute(deleteSql, binds);
+ 
+  return result.outBinds.rowcount === 1;
+}
+ 
 module.exports.delete = del;
