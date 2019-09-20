@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "curl http://localhost:3000/api/employees"
+    "test": "curl http://localhost:3000/api/employees/100"
   },
   "keywords": [],
   "author": "",
